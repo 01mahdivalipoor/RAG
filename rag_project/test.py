@@ -1,16 +1,18 @@
-# PDF
-#  ↓
-# Chunk
-#  ↓
-# Embed
-#  ↓
+# Documents
+#     │
+# Loader
+#     │
+# Cleaner
+#     │
+# Chunker
+#     │
+# Embedder
+#     │
 # Qdrant
-#  ↓
-# Retrieve
-#  ↓
-# Qwen3-8B
-#  ↓
-# Answer
+#     │
+# Retriever
+#     │
+# Context
 
 
 # test_loader.py
@@ -145,4 +147,76 @@ for r in results:
 
     print(
         r.payload["content"]
+    )
+
+#retrieval test
+from embeddings.embedder import EmbeddingModel
+from vectordb.qdrant_store import QdrantStore
+from retrieval.retriever import Retriever
+
+
+embedder = EmbeddingModel()
+
+store = QdrantStore(
+    collection_name="rag_docs",
+    vector_size=1024
+)
+
+retriever = Retriever(
+    embedder=embedder,
+    vector_store=store,
+    top_k=3
+)
+
+results = retriever.retrieve(
+    "What is RAG?"
+)
+
+for chunk in results:
+
+    print("=" * 50)
+
+    print(chunk.score)
+
+    print(chunk.content[:300])
+
+chunks = retriever.retrieve(
+    "What is RAG?"
+)
+
+context = retriever.build_context(
+    chunks
+)
+
+print(context)
+
+
+#prompt template test
+from prompts.template import PromptBuilder
+
+prompt = PromptBuilder.build(
+    question="What is RAG?",
+    context=context
+)
+
+print(prompt)
+
+#generation test
+from generation.generator import QwenGenerator
+
+generator = QwenGenerator()
+
+answer = generator.generate(
+    "What is Retrieval Augmented Generation?"
+)
+
+print(answer)
+
+for token in generator.stream(
+    prompt
+):
+    print(
+        token,
+        end="",
+        flush=True
     )
