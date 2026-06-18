@@ -1,23 +1,7 @@
-# Documents
-#     │
-# Loader
-#     │
-# Cleaner
-#     │
-# Chunker
-#     │
-# Embedder
-#     │
-# Qdrant
-#     │
-# Retriever
-#     │
-# Context
-
-
 # test_loader.py
 
 from ingestion.loader import DirectoryLoader
+from rag_project.pipeline import rag
 
 loader = DirectoryLoader("data")
 
@@ -214,6 +198,24 @@ print(answer)
 
 for token in generator.stream(
     prompt
+):
+    print(
+        token,
+        end="",
+        flush=True
+    )
+
+#rag pipeline test
+result = rag.ask(
+    "What is RAG?"
+)
+
+print(
+    result["answer"]
+)
+
+for token in rag.stream(
+    "What is RAG?"
 ):
     print(
         token,
