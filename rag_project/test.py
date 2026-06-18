@@ -1,3 +1,18 @@
+# PDF
+#  ↓
+# Chunk
+#  ↓
+# Embed
+#  ↓
+# Qdrant
+#  ↓
+# Retrieve
+#  ↓
+# Qwen3-8B
+#  ↓
+# Answer
+
+
 # test_loader.py
 
 from ingestion.loader import DirectoryLoader
@@ -70,3 +85,64 @@ vectors = embedder.embed_chunks(
 )
 
 print(len(vectors))
+
+#indexing test
+from ingestion.loader import DirectoryLoader
+from processing.cleaner import TextCleaner
+from processing.chunker import TextChunker
+
+from embeddings.embedder import EmbeddingModel
+from vectordb.qdrant_store import QdrantStore
+
+
+loader = DirectoryLoader("data")
+
+documents = loader.load()
+
+documents = TextCleaner().clean_documents(
+    documents
+)
+
+chunks = TextChunker().chunk_documents(
+    documents
+)
+
+embedder = EmbeddingModel()
+
+vectors = embedder.embed_chunks(
+    chunks
+)
+
+store = QdrantStore(
+    collection_name="rag_docs",
+    vector_size=len(vectors[0])
+)
+
+store.add_chunks(
+    chunks,
+    vectors
+)
+
+print("Indexed")
+
+#search test
+query = "What is RAG?"
+
+query_vector = embedder.embed_text(
+    query
+)
+
+results = store.search(
+    query_vector,
+    limit=3
+)
+
+for r in results:
+
+    print("=" * 50)
+
+    print(r.score)
+
+    print(
+        r.payload["content"]
+    )

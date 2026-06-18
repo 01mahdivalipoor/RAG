@@ -1,5 +1,5 @@
 from dataclasses import dataclass, field
-from typing import Dict
+from typing import Dict, List
 
 
 @dataclass
@@ -15,3 +15,9 @@ class Chunk:
     source: str
     chunk_id: int
     metadata: Dict = field(default_factory=dict)
+
+
+@dataclass
+class SearchResult:
+    chunk: Chunk
+    score: float
