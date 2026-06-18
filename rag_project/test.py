@@ -52,3 +52,21 @@ for chunk in chunks[:5]:
     print("=" * 50)
     print(chunk.chunk_id)
     print(chunk.content)
+
+# test_embedder.py
+from embeddings.embedder import EmbeddingModel
+
+embedder = EmbeddingModel()
+
+vector = embedder.embed_text(
+    "What is Retrieval Augmented Generation?"
+)
+
+print(type(vector))
+print(len(vector))
+
+vectors = embedder.embed_chunks(
+    chunks
+)
+
+print(len(vectors))

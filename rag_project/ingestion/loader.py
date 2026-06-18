@@ -36,16 +36,3 @@ class DirectoryLoader:
             documents.append(loader.load(file))
 
         return documents
-    
-
-# test_loader.py
-
-from ingestion.loader import DirectoryLoader
-
-loader = DirectoryLoader("data")
-
-documents = loader.load()
-
-for doc in documents:
-    print(doc.source)
-    print(doc.content[:100])
